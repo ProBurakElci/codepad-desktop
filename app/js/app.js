@@ -243,6 +243,64 @@
     }
   });
 
+  /* ---------------- appearance ---------------- */
+
+  /*
+   * Three states, the way macOS offers them: follow the system, or pin it one
+   * way. "Auto" is the absence of a saved preference rather than a value, so
+   * somebody who never touches this keeps following their system even after
+   * the browser has been open for a year.
+   */
+  const THEMES = ["auto", "light", "dark"];
+  const THEME_KEY = "codepad.theme";
+  const THEME_FACE = {
+    auto: { icon: "◐", label: "Appearance follows your system" },
+    light: { icon: "☀", label: "Appearance: always light" },
+    dark: { icon: "☾", label: "Appearance: always dark" },
+  };
+
+  const themeButton = $("#theme");
+
+  function applyTheme(name) {
+    if (name === "auto") delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = name;
+
+    if (!themeButton) return;
+    themeButton.textContent = THEME_FACE[name].icon;
+    themeButton.title = THEME_FACE[name].label + " - click to change";
+    themeButton.setAttribute("aria-label", THEME_FACE[name].label);
+  }
+
+  function readTheme() {
+    const store = safeStorage();
+    if (!store) return "auto";
+    try {
+      const saved = store.getItem(THEME_KEY);
+      return THEMES.indexOf(saved) === -1 ? "auto" : saved;
+    } catch (err) {
+      return "auto";
+    }
+  }
+
+  let theme = readTheme();
+  applyTheme(theme);
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+      applyTheme(theme);
+
+      const store = safeStorage();
+      if (!store) return;
+      try {
+        if (theme === "auto") store.removeItem(THEME_KEY);
+        else store.setItem(THEME_KEY, theme);
+      } catch (err) {
+        /* a blocked or full store is not worth failing over */
+      }
+    });
+  }
+
   /* ---------------- start ---------------- */
 
   const shared = Share.readUrl(location.search);

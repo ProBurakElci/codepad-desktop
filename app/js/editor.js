@@ -26,6 +26,35 @@
     let language = options.language || "javascript";
     const onChange = options.onChange || function () {};
 
+    /*
+     * The band behind the line the caret is on, the way Xcode marks it. It is
+     * created here rather than expected in the markup so that every build -
+     * page, desktop window, phone - gets it without three copies of the same
+     * <div>. If there is no parent to put it in, everything below simply
+     * skips it.
+     */
+    let caretLine = null;
+    const codeBox = textarea.parentNode;
+    if (codeBox && codeBox.appendChild) {
+      caretLine = document.createElement("div");
+      caretLine.className = "caret-line";
+      caretLine.hidden = true;
+      codeBox.insertBefore(caretLine, codeBox.firstChild);
+    }
+
+    /** The line the caret is on, counting from zero. */
+    function caretRow() {
+      let row = 0;
+      const upto = textarea.selectionStart;
+      for (let i = 0; i < upto; i++) {
+        if (textarea.value.charCodeAt(i) === 10) row++;
+      }
+      return row;
+    }
+
+    let shownRow = -1;
+    let lineCount = 0;
+
     function paint() {
       const code = textarea.value;
 
@@ -33,18 +62,74 @@
       // sit half a row out of step with the textarea.
       layer.innerHTML = global.Highlight.toHtml(code + "\n", language);
 
-      const lines = code.split("\n").length;
-      let numbers = "";
-      for (let i = 1; i <= lines; i++) numbers += i + "\n";
-      gutter.textContent = numbers;
-
+      lineCount = code.split("\n").length;
+      shownRow = -1; // the gutter is about to be rebuilt, so nothing is marked
+      markCaret();
       sync();
+    }
+
+    /**
+     * Moves the band and brightens the current line number.
+     *
+     * The gutter is only rebuilt when the caret actually changes line, so
+     * arrowing along one line costs nothing.
+     */
+    function markCaret() {
+      const row = caretRow();
+      if (row === shownRow) {
+        placeBand(row);
+        return;
+      }
+      shownRow = row;
+
+      let numbers = "";
+      for (let i = 1; i <= lineCount; i++) {
+        // numbers only, so there is nothing here that needs escaping
+        numbers += i === row + 1 ? '<b class="on">' + i + "</b>\n" : i + "\n";
+      }
+      gutter.innerHTML = numbers;
+
+      placeBand(row);
+    }
+
+    /*
+     * Reading these back out of the browser costs a layout, and the band
+     * moves on every scroll event, so they are read once and kept until
+     * something that could change them happens.
+     */
+    let metrics = null;
+
+    function readMetrics() {
+      const style = window.getComputedStyle(textarea);
+      const height = parseFloat(style.lineHeight);
+      metrics = height
+        ? { height: height, top: parseFloat(style.paddingTop) || 0 }
+        : null; // line-height: normal, so there is no reliable number
+    }
+
+    function placeBand(row) {
+      if (!caretLine) return;
+
+      // While text is selected the band only gets in the way of seeing it.
+      if (textarea.selectionStart !== textarea.selectionEnd) {
+        caretLine.hidden = true;
+        return;
+      }
+
+      if (!metrics) readMetrics();
+      if (!metrics) return;
+
+      caretLine.style.height = metrics.height + "px";
+      caretLine.style.top =
+        (metrics.top + row * metrics.height - textarea.scrollTop) + "px";
+      caretLine.hidden = false;
     }
 
     function sync() {
       layer.scrollTop = textarea.scrollTop;
       layer.scrollLeft = textarea.scrollLeft;
       gutter.scrollTop = textarea.scrollTop;
+      placeBand(shownRow < 0 ? 0 : shownRow);
     }
 
     function setSelection(start, end) {
@@ -85,6 +170,24 @@
       onChange();
     });
     textarea.addEventListener("scroll", sync);
+
+    /*
+     * Everything that can move the caret without changing the text. The band
+     * and the highlighted line number follow it.
+     */
+    for (const event of ["keyup", "mouseup", "select", "focus", "click"]) {
+      textarea.addEventListener(event, markCaret);
+    }
+    textarea.addEventListener("blur", function () {
+      if (caretLine) caretLine.hidden = true;
+    });
+
+    // The font and its line height can change with the window - a different
+    // size class, or the page being zoomed.
+    window.addEventListener("resize", function () {
+      metrics = null;
+      placeBand(shownRow < 0 ? 0 : shownRow);
+    });
 
     textarea.addEventListener("keydown", function (event) {
       // Tab indents instead of walking out of the field. Shift+Tab outdents.

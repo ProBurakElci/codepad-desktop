@@ -12,7 +12,7 @@
  */
 "use strict";
 
-const { app, BrowserWindow, Menu, dialog, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, Menu, dialog, ipcMain, nativeTheme, shell } = require("electron");
 const fs = require("fs/promises");
 const path = require("path");
 
@@ -233,7 +233,13 @@ function createWindow() {
     height: 760,
     minWidth: 640,
     minHeight: 420,
-    backgroundColor: "#0b1120",
+    /*
+     * Shown for the instant before the page paints, so it has to be the
+     * colour the page is about to be - otherwise the window flashes the
+     * wrong appearance on every launch. These two match the editor
+     * background tokens at the top of app/styles.css.
+     */
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#1f1f24" : "#ffffff",
     show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -271,6 +277,13 @@ function createWindow() {
   });
 
   win.on("closed", () => { win = null; });
+
+  // Switching the system appearance while the app is open.
+  nativeTheme.on("updated", () => {
+    if (win && !win.isDestroyed()) {
+      win.setBackgroundColor(nativeTheme.shouldUseDarkColors ? "#1f1f24" : "#ffffff");
+    }
+  });
 }
 
 /* ---------------- messages from the window ---------------- */

@@ -1,19 +1,148 @@
-:root {
-  --bg: #0b1120;
-  --panel: #0e1626;
-  --bar: #111b2e;
-  --line: #1e2b45;
-  --text: #dbe5f5;
-  --muted: #8296b5;
-  --accent: #38bdf8;
-  --green: #34d399;
-  --red: #f87171;
-  --amber: #fbbf24;
-  --violet: #a78bfa;
+/*
+ * The look.
+ *
+ * Modelled on Xcode: its Default (Dark) and Default (Light) syntax themes,
+ * its hairline-separated panes, and the macOS chrome around them - SF fonts,
+ * translucent toolbar, 6px corners, blue accent.
+ *
+ * Two rules everything else bends around:
+ *
+ *   1. Every colour is a token on :root, defined twice - once for dark, once
+ *      for light. Nothing below this block names a colour directly, so the
+ *      two themes cannot drift apart.
+ *   2. The textarea and the highlighted layer under it must agree on every
+ *      metric that moves a glyph. Font, size, line height, padding, tab size.
+ *      One pixel of disagreement and the caret sits away from its own text.
+ */
 
-  --code-font: "Cascadia Mono", Consolas, "SF Mono", "Fira Code", monospace;
-  --code-size: 14.5px;
-  --code-line: 1.55;
+:root {
+  /* ---- Xcode Default (Dark) ---- */
+  --bg: #1f1f24;            /* the editor surface */
+  --chrome: #2a2a2e;        /* toolbar and pane headers */
+  --chrome-2: #252529;      /* gutter, status bar */
+  --line: #38383c;          /* hairline */
+  --line-soft: #2f2f33;
+  --text: #e8e8ea;
+  --muted: #8e8e93;         /* macOS secondary label */
+  --faint: #5c5c61;         /* line numbers */
+  --accent: #0a84ff;        /* macOS blue, dark appearance */
+  --accent-quiet: rgba(10, 132, 255, 0.16);
+  --on-accent: #ffffff;
+  --selection: rgba(63, 99, 139, 0.6);
+  --caret-line: rgba(255, 255, 255, 0.045);
+  --shadow: rgba(0, 0, 0, 0.42);
+
+  --green: #30d158;
+  --red: #ff453a;
+  --amber: #ffd60a;
+  --violet: #bf5af2;
+
+  /* Xcode Default (Dark) syntax */
+  --t-plain: #dfdfe0;
+  --t-keyword: #fc5fa3;
+  --t-literal: #d0a8ff;
+  --t-builtin: #5dd8ff;
+  --t-call: #67b7a4;
+  --t-string: #fc6a5d;
+  --t-number: #d0bf69;
+  --t-comment: #6c7986;
+  --t-tag: #fc5fa3;
+  --t-attr: #bf8555;
+
+  /*
+   * San Francisco where it exists, and the closest thing to it elsewhere.
+   * ui-monospace resolves to SF Mono on Apple platforms without needing the
+   * font to be installed by name.
+   */
+  --ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI Variable Text", "Segoe UI", system-ui, "Helvetica Neue", sans-serif;
+  --code-font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco,
+    "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  --code-size: 13.5px;
+  --code-line: 1.5;
+  --pad: 14px;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+
+  color-scheme: dark;
+}
+
+/*
+ * Light is the system's business unless the user said otherwise, which is how
+ * a Mac app behaves. data-theme wins over the system in both directions.
+ */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --bg: #ffffff;
+    --chrome: #f3f3f5;
+    --chrome-2: #fafafc;
+    --line: #d9d9de;
+    --line-soft: #e7e7ea;
+    --text: #1d1d1f;
+    --muted: #6e6e73;
+    --faint: #a6a6ab;
+    --accent: #007aff;
+    --accent-quiet: rgba(0, 122, 255, 0.12);
+    --on-accent: #ffffff;
+    --selection: rgba(179, 215, 255, 0.85);
+    --caret-line: rgba(0, 0, 0, 0.035);
+    --shadow: rgba(0, 0, 0, 0.14);
+
+    --green: #248a3d;
+    --red: #d70015;
+    --amber: #a05a00;
+    --violet: #8944ab;
+
+    /* Xcode Default (Light) syntax */
+    --t-plain: #000000;
+    --t-keyword: #ad3da4;
+    --t-literal: #703daa;
+    --t-builtin: #0b4f79;
+    --t-call: #326d74;
+    --t-string: #d12f1b;
+    --t-number: #272ad8;
+    --t-comment: #5d6c79;
+    --t-tag: #ad3da4;
+    --t-attr: #947100;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --chrome: #f3f3f5;
+  --chrome-2: #fafafc;
+  --line: #d9d9de;
+  --line-soft: #e7e7ea;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --faint: #a6a6ab;
+  --accent: #007aff;
+  --accent-quiet: rgba(0, 122, 255, 0.12);
+  --on-accent: #ffffff;
+  --selection: rgba(179, 215, 255, 0.85);
+  --caret-line: rgba(0, 0, 0, 0.035);
+  --shadow: rgba(0, 0, 0, 0.14);
+
+  --green: #248a3d;
+  --red: #d70015;
+  --amber: #a05a00;
+  --violet: #8944ab;
+
+  --t-plain: #000000;
+  --t-keyword: #ad3da4;
+  --t-literal: #703daa;
+  --t-builtin: #0b4f79;
+  --t-call: #326d74;
+  --t-string: #d12f1b;
+  --t-number: #272ad8;
+  --t-comment: #5d6c79;
+  --t-tag: #ad3da4;
+  --t-attr: #947100;
 }
 
 * { box-sizing: border-box; }
@@ -26,8 +155,10 @@ body {
   flex-direction: column;
   background: var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: var(--ui-font);
+  font-size: 13px;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
 }
 
@@ -40,75 +171,124 @@ body {
   white-space: nowrap;
 }
 
-/* ---------- top bar ---------- */
+/* A single blue focus ring, the way every control on macOS gets one. */
+:where(button, select, textarea, a):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-quiet), 0 0 0 1px var(--accent);
+}
+
+/* ---------- toolbar ---------- */
 
 .bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px;
-  background: var(--bar);
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--chrome);
   border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
+  /* the translucent toolbar every Mac window has, where it is supported */
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
 .bar-left, .bar-right { display: flex; align-items: center; gap: 8px; }
-.bar-left strong { font-size: 15px; letter-spacing: 0.2px; }
+.bar-left { min-width: 0; }
+
+.bar-left strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 
 .logo {
   font-family: var(--code-font);
   color: var(--accent);
-  background: #0a1322;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-size: 13px;
+  background: var(--accent-quiet);
+  border-radius: var(--radius);
+  padding: 3px 7px;
+  font-size: 11.5px;
+  font-weight: 600;
 }
 
+/*
+ * Xcode's jump bar is a row of flat popups, not boxed dropdowns. The chevron
+ * is drawn rather than left to the platform so it matches on every OS.
+ */
 select {
-  background: #0a1322;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: right 11px center, right 6px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
   color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 8px 10px;
-  font-size: 13.5px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 5px 24px 5px 8px;
+  font-size: 13px;
   font-family: inherit;
+  font-weight: 500;
   cursor: pointer;
+  max-width: 190px;
 }
+select:hover { background-color: var(--line-soft); }
 
 .badge {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--muted);
-  border: 1px solid var(--line);
+  background: var(--line-soft);
   border-radius: 999px;
-  padding: 4px 10px;
+  padding: 3px 9px;
   white-space: nowrap;
+  font-weight: 500;
 }
-.badge.can-run { color: var(--green); border-color: rgba(52, 211, 153, 0.4); }
+.badge.can-run { color: var(--green); background: color-mix(in srgb, var(--green) 14%, transparent); }
+
+/* ---------- buttons ---------- */
 
 .btn {
-  background: #0a1322;
+  background: var(--bg);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 8px 13px;
-  font-size: 13.5px;
+  border-radius: var(--radius);
+  padding: 5px 11px;
+  font-size: 12.5px;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.12s ease, border-color 0.12s ease;
 }
-.btn:hover { border-color: var(--accent); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:hover { background: var(--line-soft); }
+.btn:active { background: var(--line); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btn-run {
-  background: linear-gradient(135deg, var(--green), #10b981);
-  color: #04231a;
+  background: var(--accent);
+  color: var(--on-accent);
   border-color: transparent;
-  min-width: 92px;
+  font-weight: 600;
+  min-width: 78px;
 }
-.btn-run.busy { background: linear-gradient(135deg, var(--amber), #f59e0b); color: #2a1a02; }
-.play { font-size: 11px; }
+.btn-run:hover { background: color-mix(in srgb, var(--accent) 88%, #fff); }
+.btn-run:active { background: color-mix(in srgb, var(--accent) 82%, #000); }
+.btn-run.busy { background: var(--red); }
+.btn-run.busy:hover { background: color-mix(in srgb, var(--red) 88%, #fff); }
+.play { font-size: 9px; vertical-align: 1px; }
+
+/* the appearance switch, an icon button */
+.btn-icon {
+  width: 28px;
+  padding: 5px 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1;
+}
 
 /* ---------- layout ---------- */
 
@@ -133,27 +313,45 @@ main {
   flex: 1;
   display: flex;
   min-height: 0;
-  background: var(--panel);
+  background: var(--bg);
   position: relative;
 }
 
 .gutter {
   flex: 0 0 auto;
-  padding: 14px 10px 14px 14px;
+  padding: var(--pad) 8px var(--pad) 12px;
   text-align: right;
-  color: #44557a;
-  background: #0c1423;
-  border-right: 1px solid var(--line);
+  color: var(--faint);
+  background: var(--chrome-2);
+  border-right: 1px solid var(--line-soft);
   font-family: var(--code-font);
   font-size: var(--code-size);
   line-height: var(--code-line);
+  font-variant-numeric: tabular-nums;
   white-space: pre;
   overflow: hidden;
   user-select: none;
-  min-width: 46px;
+  min-width: 44px;
 }
 
+/* the line the caret is on, brighter - as Xcode does it */
+.gutter .on { color: var(--text); font-weight: 400; }
+
 .code { position: relative; flex: 1; min-width: 0; }
+
+/*
+ * Behind the text, moved by the editor as the caret changes line. It is a
+ * child of .code so it scrolls with nothing and is positioned by script.
+ */
+.caret-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--code-size) * var(--code-line));
+  background: var(--caret-line);
+  pointer-events: none;
+  z-index: 0;
+}
 
 /*
  * The textarea and the highlighted layer must agree on every metric that moves
@@ -161,7 +359,7 @@ main {
  */
 .layer, .code textarea {
   margin: 0;
-  padding: 14px 16px;
+  padding: var(--pad) 16px;
   border: 0;
   font-family: var(--code-font);
   font-size: var(--code-size);
@@ -176,41 +374,45 @@ main {
 
 .layer {
   pointer-events: none;
-  color: var(--text);
-  z-index: 0;
+  color: var(--t-plain);
+  z-index: 1;
 }
 
 .code textarea {
-  z-index: 1;
+  z-index: 2;
   background: transparent;
   color: transparent;
   caret-color: var(--accent);
   resize: none;
   outline: none;
 }
-.code textarea::selection { background: rgba(56, 189, 248, 0.28); }
+.code textarea::selection { background: var(--selection); }
+.code textarea:focus-visible { box-shadow: none; }
 
 .status {
-  padding: 7px 14px;
-  border-top: 1px solid var(--line);
-  background: #0c1423;
+  padding: 5px var(--pad);
+  border-top: 1px solid var(--line-soft);
+  background: var(--chrome-2);
   color: var(--muted);
-  font-size: 12px;
-  min-height: 30px;
+  font-size: 11.5px;
+  min-height: 27px;
   font-family: var(--code-font);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
 }
 
 /* ---------- syntax colours ---------- */
 
-.t-keyword { color: #c586c0; }
-.t-literal { color: #569cd6; }
-.t-builtin { color: #4ec9b0; }
-.t-call    { color: #dcdcaa; }
-.t-string  { color: #ce9178; }
-.t-number  { color: #b5cea8; }
-.t-comment { color: #6a9955; font-style: italic; }
-.t-tag     { color: #569cd6; }
-.t-attr    { color: #9cdcfe; }
+.t-keyword { color: var(--t-keyword); }
+.t-literal { color: var(--t-literal); }
+.t-builtin { color: var(--t-builtin); }
+.t-call    { color: var(--t-call); }
+.t-string  { color: var(--t-string); }
+.t-number  { color: var(--t-number); }
+.t-comment { color: var(--t-comment); }
+.t-tag     { color: var(--t-tag); }
+.t-attr    { color: var(--t-attr); }
 
 /* ---------- output ---------- */
 
@@ -218,46 +420,53 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 14px;
-  border-bottom: 1px solid var(--line);
-  background: #0c1423;
+  padding: 7px var(--pad);
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--chrome);
   font-size: 12px;
+  font-weight: 600;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  min-height: 32px;
 }
 
 .link-btn {
   background: none;
   border: 0;
-  color: var(--muted);
-  font-size: 11.5px;
+  color: var(--accent);
+  font-size: 12px;
   font-family: inherit;
+  font-weight: 500;
   cursor: pointer;
-  text-transform: none;
-  letter-spacing: 0;
+  padding: 2px 4px;
+  border-radius: 4px;
 }
-.link-btn:hover { color: var(--accent); }
+.link-btn:hover { background: var(--accent-quiet); }
 
 .output {
   flex: 1;
   overflow: auto;
-  padding: 12px 14px;
+  padding: 10px var(--pad);
+  background: var(--bg);
   font-family: var(--code-font);
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: 12.5px;
+  line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .out-line { padding: 1px 0; }
-.out-log { color: var(--text); }
+.out-log { color: var(--t-plain); }
 .out-warn { color: var(--amber); }
 .out-error { color: var(--red); }
 .out-result { color: var(--violet); }
-.out-note { color: var(--muted); font-style: italic; }
-.out-meta { color: var(--muted); border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
-.out-empty { color: var(--muted); font-style: italic; }
+.out-note { color: var(--muted); }
+.out-meta {
+  color: var(--muted);
+  border-top: 1px solid var(--line-soft);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.out-empty { color: var(--muted); }
 
 .preview {
   flex: 1;
@@ -266,17 +475,24 @@ main {
   width: 100%;
 }
 
+/* ---------- footer ---------- */
+
 footer {
-  padding: 8px 14px;
+  padding: 6px var(--pad);
   border-top: 1px solid var(--line);
-  background: var(--bar);
+  background: var(--chrome);
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: 11px;
   text-align: center;
 }
-footer a { color: var(--accent); margin-left: 6px; }
+footer a { color: var(--accent); margin-left: 6px; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
 
 @media (max-width: 620px) {
   .bar { padding: 8px 10px; }
   .bar-left strong, footer { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
 }
