@@ -107,8 +107,8 @@
       output.hidden = false;
       clearOutput();
       line("note", Highlight.LANGUAGES[language].name +
-        " is highlighted here, not run - this page has no compiler for it.");
-      line("note", "JavaScript, Python and HTML do run. The ▸ in the menu marks them.");
+        " is highlighted here, not run - there is no compiler for it here.");
+      line("note", runnableLanguages() + " run. The ▸ in the menu marks them.");
       return;
     }
 
@@ -139,6 +139,14 @@
     running = ability.how === "python"
       ? Runner.runPython(code, handlers)
       : Runner.runJavaScript(code, handlers);
+  }
+
+  /** "JavaScript, Python and HTML" - whichever of them this build can run. */
+  function runnableLanguages() {
+    const names = Highlight.list().filter((l) => l.run).map((l) => l.name);
+    if (names.length === 0) return "Nothing here";
+    if (names.length === 1) return names[0];
+    return names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
   }
 
   /* ---------------- switching language ---------------- */
