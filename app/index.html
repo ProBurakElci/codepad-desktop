@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>codepad — write code, press run</title>
+<meta name="description" content="A code editor in your browser. Seventeen languages highlighted, three of them actually run: JavaScript in a sandboxed worker, Python through Pyodide, and HTML in a preview frame. No account, no server, no build step." />
+<meta property="og:title" content="codepad — write code, press run" />
+<meta property="og:description" content="Seventeen languages highlighted, three of them run for real. Nothing is uploaded anywhere." />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b1120'/><text x='50' y='68' font-size='52' font-family='monospace' fill='%2338bdf8' text-anchor='middle'>&lt;/&gt;</text></svg>" />
+</head>
+<body>
+  <header class="bar">
+    <div class="bar-left">
+      <span class="logo" aria-hidden="true">&lt;/&gt;</span>
+      <strong>codepad</strong>
+
+      <label class="sr-only" for="language">Language</label>
+      <select id="language"></select>
+
+      <span class="badge" id="run-badge"></span>
+    </div>
+
+    <div class="bar-right">
+      <button class="btn" id="sample" title="Load the example for this language">Example</button>
+      <button class="btn" id="share" title="Copy a link that contains this code">Share</button>
+      <button class="btn" id="download" title="Download as a file">Save</button>
+      <button class="btn btn-run" id="run" title="Ctrl+Enter">
+        <span class="play" aria-hidden="true">▶</span> Run
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="pane pane-editor">
+      <div class="editor" id="editor">
+        <div class="gutter" id="gutter" aria-hidden="true"></div>
+        <div class="code">
+          <pre class="layer" id="layer" aria-hidden="true"></pre>
+          <textarea id="input" spellcheck="false" autocapitalize="off" autocomplete="off"
+            autocorrect="off" wrap="off" aria-label="Code editor"></textarea>
+        </div>
+      </div>
+      <div class="status" id="status"></div>
+    </section>
+
+    <section class="pane pane-output">
+      <div class="pane-head">
+        <span id="output-title">Output</span>
+        <button class="link-btn" id="clear">clear</button>
+      </div>
+      <div class="output" id="output"></div>
+      <iframe class="preview" id="preview" title="HTML preview" hidden></iframe>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Nothing you write is uploaded. JavaScript runs in a worker with no access
+      to this page, HTML renders in a sandboxed frame, and Python runs as
+      WebAssembly in the same tab.
+      <a href="https://github.com/ProBurakElci/codepad-desktop" target="_blank" rel="noopener">Source code</a>
+    </p>
+  </footer>
+
+  <script src="js/highlight.js"></script>
+  <script src="js/samples.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/desktop.js"></script>
+</body>
+</html>

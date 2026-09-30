@@ -1,0 +1,282 @@
+:root {
+  --bg: #0b1120;
+  --panel: #0e1626;
+  --bar: #111b2e;
+  --line: #1e2b45;
+  --text: #dbe5f5;
+  --muted: #8296b5;
+  --accent: #38bdf8;
+  --green: #34d399;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --violet: #a78bfa;
+
+  --code-font: "Cascadia Mono", Consolas, "SF Mono", "Fira Code", monospace;
+  --code-size: 14.5px;
+  --code-line: 1.55;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- top bar ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.bar-left, .bar-right { display: flex; align-items: center; gap: 8px; }
+.bar-left strong { font-size: 15px; letter-spacing: 0.2px; }
+
+.logo {
+  font-family: var(--code-font);
+  color: var(--accent);
+  background: #0a1322;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+select {
+  background: #0a1322;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 8px 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.badge {
+  font-size: 11.5px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.badge.can-run { color: var(--green); border-color: rgba(52, 211, 153, 0.4); }
+
+.btn {
+  background: #0a1322;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 8px 13px;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-run {
+  background: linear-gradient(135deg, var(--green), #10b981);
+  color: #04231a;
+  border-color: transparent;
+  min-width: 92px;
+}
+.btn-run.busy { background: linear-gradient(135deg, var(--amber), #f59e0b); color: #2a1a02; }
+.play { font-size: 11px; }
+
+/* ---------- layout ---------- */
+
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 0;
+}
+
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.pane-editor { border-right: 1px solid var(--line); }
+
+@media (max-width: 860px) {
+  main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .pane-editor { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+
+/* ---------- editor ---------- */
+
+.editor {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  background: var(--panel);
+  position: relative;
+}
+
+.gutter {
+  flex: 0 0 auto;
+  padding: 14px 10px 14px 14px;
+  text-align: right;
+  color: #44557a;
+  background: #0c1423;
+  border-right: 1px solid var(--line);
+  font-family: var(--code-font);
+  font-size: var(--code-size);
+  line-height: var(--code-line);
+  white-space: pre;
+  overflow: hidden;
+  user-select: none;
+  min-width: 46px;
+}
+
+.code { position: relative; flex: 1; min-width: 0; }
+
+/*
+ * The textarea and the highlighted layer must agree on every metric that moves
+ * a glyph, or the caret drifts away from the text under it.
+ */
+.layer, .code textarea {
+  margin: 0;
+  padding: 14px 16px;
+  border: 0;
+  font-family: var(--code-font);
+  font-size: var(--code-size);
+  line-height: var(--code-line);
+  tab-size: 2;
+  white-space: pre;
+  word-wrap: normal;
+  overflow: auto;
+  position: absolute;
+  inset: 0;
+}
+
+.layer {
+  pointer-events: none;
+  color: var(--text);
+  z-index: 0;
+}
+
+.code textarea {
+  z-index: 1;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--accent);
+  resize: none;
+  outline: none;
+}
+.code textarea::selection { background: rgba(56, 189, 248, 0.28); }
+
+.status {
+  padding: 7px 14px;
+  border-top: 1px solid var(--line);
+  background: #0c1423;
+  color: var(--muted);
+  font-size: 12px;
+  min-height: 30px;
+  font-family: var(--code-font);
+}
+
+/* ---------- syntax colours ---------- */
+
+.t-keyword { color: #c586c0; }
+.t-literal { color: #569cd6; }
+.t-builtin { color: #4ec9b0; }
+.t-call    { color: #dcdcaa; }
+.t-string  { color: #ce9178; }
+.t-number  { color: #b5cea8; }
+.t-comment { color: #6a9955; font-style: italic; }
+.t-tag     { color: #569cd6; }
+.t-attr    { color: #9cdcfe; }
+
+/* ---------- output ---------- */
+
+.pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--line);
+  background: #0c1423;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.link-btn {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.link-btn:hover { color: var(--accent); }
+
+.output {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 14px;
+  font-family: var(--code-font);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.out-line { padding: 1px 0; }
+.out-log { color: var(--text); }
+.out-warn { color: var(--amber); }
+.out-error { color: var(--red); }
+.out-result { color: var(--violet); }
+.out-note { color: var(--muted); font-style: italic; }
+.out-meta { color: var(--muted); border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+.out-empty { color: var(--muted); font-style: italic; }
+
+.preview {
+  flex: 1;
+  border: 0;
+  background: #ffffff;
+  width: 100%;
+}
+
+footer {
+  padding: 8px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--bar);
+  color: var(--muted);
+  font-size: 11.5px;
+  text-align: center;
+}
+footer a { color: var(--accent); margin-left: 6px; }
+
+@media (max-width: 620px) {
+  .bar { padding: 8px 10px; }
+  .bar-left strong, footer { display: none; }
+}

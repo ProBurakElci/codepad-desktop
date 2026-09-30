@@ -1,0 +1,96 @@
+{
+  "name": "codepad-desktop",
+  "version": "1.0.0",
+  "description": "codepad as a desktop app: a code editor that opens and saves real files, and runs JavaScript, Python and HTML locally.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/run-tests.js",
+    "smoke": "node test/smoke.js",
+    "pack": "npx --yes electron-builder --dir",
+    "dist": "npx --yes electron-builder"
+  },
+  "author": "proburakelci",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^44.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProBurakElci/codepad-desktop.git"
+  },
+  "keywords": [
+    "code-editor",
+    "electron",
+    "desktop",
+    "playground",
+    "offline"
+  ],
+  "build": {
+    "appId": "io.github.proburakelci.codepad",
+    "productName": "codepad",
+    "copyright": "MIT licensed",
+    "files": [
+      "main.js",
+      "preload.js",
+      "filetypes.js",
+      "app/**/*",
+      "LICENSE"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "fileAssociations": [
+      {
+        "ext": "js",
+        "name": "JavaScript file",
+        "role": "Editor"
+      },
+      {
+        "ext": "py",
+        "name": "Python file",
+        "role": "Editor"
+      },
+      {
+        "ext": "html",
+        "name": "HTML file",
+        "role": "Editor"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.developer-tools"
+    }
+  }
+}
